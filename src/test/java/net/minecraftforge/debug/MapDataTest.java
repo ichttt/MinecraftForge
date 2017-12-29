@@ -214,11 +214,10 @@ public class MapDataTest
         }
     }
 
-    public static class CustomMapPacketHandler implements IMessageHandler<CustomMapPacket, IMessage>
+    public static class CustomMapPacketHandler implements IMessageHandler<CustomMapPacket>
     {
-        @Nullable
         @Override
-        public IMessage onMessage(CustomMapPacket message, MessageContext ctx)
+        public void onMessage(CustomMapPacket message, MessageContext ctx)
         {
             // Like NetHandlerPlayClient.handleMaps but using our custom type
             Minecraft.getMinecraft().addScheduledTask(new Runnable() {
@@ -247,8 +246,6 @@ public class MapDataTest
                     mapitemrenderer.updateMapTexture(mapdata);
                 }
             });
-
-            return null;
         }
     }
 

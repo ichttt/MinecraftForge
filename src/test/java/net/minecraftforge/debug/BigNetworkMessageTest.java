@@ -25,7 +25,7 @@ public class BigNetworkMessageTest
     {
         if (ENABLED)
         {
-            INSTANCE.registerMessage((msg, ctx) -> null, BigMessage.class, 0, Side.SERVER);
+            INSTANCE.registerMessage((msg, ctx) -> {}, BigMessage.class, 0, Side.SERVER);
         }
     }
 

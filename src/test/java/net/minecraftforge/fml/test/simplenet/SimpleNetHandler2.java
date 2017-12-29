@@ -3,12 +3,11 @@ package net.minecraftforge.fml.test.simplenet;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-public class SimpleNetHandler2 implements IMessageHandler<SimpleNetTestMessage2, SimpleNetTestMessage1>
+public class SimpleNetHandler2 implements IMessageHandler<SimpleNetTestMessage2>
 {
     @Override
-    public SimpleNetTestMessage1 onMessage(SimpleNetTestMessage2 message, MessageContext context)
+    public void onMessage(SimpleNetTestMessage2 message, MessageContext context)
     {
-        return null;
     }
 
 }
