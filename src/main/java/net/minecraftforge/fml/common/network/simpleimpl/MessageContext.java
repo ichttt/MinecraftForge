@@ -19,10 +19,15 @@
 
 package net.minecraftforge.fml.common.network.simpleimpl;
 
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraftforge.fml.common.network.FMLOutboundHandler;
 import net.minecraftforge.fml.relauncher.Side;
+
+import javax.annotation.Nonnull;
 
 /**
  * Context for the {@link IMessageHandler}
@@ -31,6 +36,10 @@ import net.minecraftforge.fml.relauncher.Side;
  *
  */
 public class MessageContext {
+    /**
+     * The Channel Handler for this message.
+     */
+    private final ChannelHandlerContext ctx;
     /**
      * The {@link INetHandler} for this message. It could be a client or server handler, depending
      * on the {@link #side} received.
@@ -41,13 +50,18 @@ public class MessageContext {
      * The Side this message has been received on
      */
     public final Side side;
-    /**
-     * @param netHandler
-     */
-    MessageContext(INetHandler netHandler, Side side)
+
+    MessageContext(ChannelHandlerContext ctx, INetHandler netHandler, Side side)
     {
+        this.ctx = ctx;
         this.netHandler = netHandler;
         this.side = side;
+    }
+
+    public void reply(@Nonnull IMessage message)
+    {
+        ctx.channel().attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.REPLY);
+        ctx.writeAndFlush(message).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
     }
 
     public NetHandlerPlayServer getServerHandler()

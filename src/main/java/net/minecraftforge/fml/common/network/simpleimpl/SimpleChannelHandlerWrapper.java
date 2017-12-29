@@ -33,16 +33,16 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
-public class SimpleChannelHandlerWrapper<REQ extends IMessage, REPLY extends IMessage> extends SimpleChannelInboundHandler<REQ> {
-    private final IMessageHandler<? super REQ, ? extends REPLY> messageHandler;
+public class SimpleChannelHandlerWrapper<REQ extends IMessage> extends SimpleChannelInboundHandler<REQ> {
+    private final IMessageHandler<? super REQ> messageHandler;
     private final Side side;
     
-    public SimpleChannelHandlerWrapper(Class<? extends IMessageHandler<? super REQ, ? extends REPLY>> handler, Side side, Class<REQ> requestType)
+    public SimpleChannelHandlerWrapper(Class<? extends IMessageHandler<? super REQ>> handler, Side side, Class<REQ> requestType)
     {
         this(SimpleNetworkWrapper.instantiate(handler), side, requestType);
     }
     
-    public SimpleChannelHandlerWrapper(IMessageHandler<? super REQ, ? extends REPLY> handler, Side side, Class<REQ> requestType)
+    public SimpleChannelHandlerWrapper(IMessageHandler<? super REQ> handler, Side side, Class<REQ> requestType)
     {
         super(requestType);
         messageHandler = Preconditions.checkNotNull(handler, "IMessageHandler must not be null");
@@ -52,13 +52,8 @@ public class SimpleChannelHandlerWrapper<REQ extends IMessage, REPLY extends IMe
     protected void channelRead0(ChannelHandlerContext ctx, REQ msg) throws Exception
     {
         INetHandler iNetHandler = ctx.channel().attr(NetworkRegistry.NET_HANDLER).get();
-        MessageContext context = new MessageContext(iNetHandler, side);
-        REPLY result = messageHandler.onMessage(msg, context);
-        if (result != null)
-        {
-            ctx.channel().attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.REPLY);
-            ctx.writeAndFlush(result).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
-        }
+        MessageContext context = new MessageContext(ctx, iNetHandler, side);
+        messageHandler.onMessage(msg, context);
     }
 
     @Override

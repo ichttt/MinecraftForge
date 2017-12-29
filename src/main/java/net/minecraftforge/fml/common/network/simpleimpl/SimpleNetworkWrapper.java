@@ -55,7 +55,7 @@ import net.minecraftforge.fml.relauncher.Side;
  * should be unique for this channelName - it is used to discriminate between different types of message that might
  * occur on this channel (a simple form of message channel multiplexing, if you will).
  * <li>To get a packet suitable for presenting to the rest of minecraft, you can call {@link #getPacketFrom(IMessage)}. The return result
- * is suitable for returning from things like {@link TileEntity#getDescriptionPacket()} for example.
+ * is suitable for returning from things like {@link TileEntity#getUpdatePacket()} for example.
  * <li>Finally, use the sendXXX to send unsolicited messages to various classes of recipients.
  * </ul>
  *
@@ -80,15 +80,14 @@ import net.minecraftforge.fml.relauncher.Side;
  *  public Message1Handler implements IMessageHandler<Message1,Message2> {
  *   public Message2 onMessage(Message1 message, MessageContext ctx) {
  *    // do something and generate reply message
- *    return aMessage2Object;
+ *    ctx.reply(aMessage2Object);
  *   }
  *  }
  *  // Message2Handler expects input of type Message2 and returns no message (IMessage)
  *  public Message2Handler implements IMessageHandler<Message2,IMessage> {
  *   public IMessage onMessage(Message2 message, MessageContext ctx) {
  *    // handle the message 2 response message at the other end
- *    // no reply for this message - return null
- *    return null;
+ *    // no reply for this message - do nothing
  *   }
  *  }
  *
@@ -114,6 +113,7 @@ public class SimpleNetworkWrapper {
     private SimpleIndexedCodec packetCodec;
     private static Class<?> defaultChannelPipeline;
     private static Method generateName;
+    static
     {
         try
         {
@@ -153,12 +153,12 @@ public class SimpleNetworkWrapper {
      * @param discriminator a discriminator byte
      * @param side the side for the handler
      */
-    public <REQ extends IMessage, REPLY extends IMessage> void registerMessage(Class<? extends IMessageHandler<REQ, REPLY>> messageHandler, Class<REQ> requestMessageType, int discriminator, Side side)
+    public <REQ extends IMessage> void registerMessage(Class<? extends IMessageHandler<REQ>> messageHandler, Class<REQ> requestMessageType, int discriminator, Side side)
     {
         registerMessage(instantiate(messageHandler), requestMessageType, discriminator, side);
     }
     
-    static <REQ extends IMessage, REPLY extends IMessage> IMessageHandler<? super REQ, ? extends REPLY> instantiate(Class<? extends IMessageHandler<? super REQ, ? extends REPLY>> handler)
+    static <REQ extends IMessage> IMessageHandler<? super REQ> instantiate(Class<? extends IMessageHandler<? super REQ>> handler)
     {
         try
         {
@@ -179,7 +179,7 @@ public class SimpleNetworkWrapper {
      * @param discriminator a discriminator byte
      * @param side the side for the handler
      */
-    public <REQ extends IMessage, REPLY extends IMessage> void registerMessage(IMessageHandler<? super REQ, ? extends REPLY> messageHandler, Class<REQ> requestMessageType, int discriminator, Side side)
+    public <REQ extends IMessage> void registerMessage(IMessageHandler<? super REQ> messageHandler, Class<REQ> requestMessageType, int discriminator, Side side)
     {
         packetCodec.addDiscriminator(discriminator, requestMessageType);
         FMLEmbeddedChannel channel = channels.get(side);
@@ -194,26 +194,26 @@ public class SimpleNetworkWrapper {
         }
     }
 
-    private <REQ extends IMessage, REPLY extends IMessage, NH extends INetHandler> void addServerHandlerAfter(FMLEmbeddedChannel channel, String type, IMessageHandler<? super REQ, ? extends REPLY> messageHandler, Class<REQ> requestType)
+    private <REQ extends IMessage> void addServerHandlerAfter(FMLEmbeddedChannel channel, String type, IMessageHandler<? super REQ> messageHandler, Class<REQ> requestType)
     {
-        SimpleChannelHandlerWrapper<REQ, REPLY> handler = getHandlerWrapper(messageHandler, Side.SERVER, requestType);
+        SimpleChannelHandlerWrapper<REQ> handler = getHandlerWrapper(messageHandler, Side.SERVER, requestType);
         channel.pipeline().addAfter(type, generateName(channel.pipeline(), handler), handler);
     }
 
-    private <REQ extends IMessage, REPLY extends IMessage, NH extends INetHandler> void addClientHandlerAfter(FMLEmbeddedChannel channel, String type, IMessageHandler<? super REQ, ? extends REPLY> messageHandler, Class<REQ> requestType)
+    private <REQ extends IMessage> void addClientHandlerAfter(FMLEmbeddedChannel channel, String type, IMessageHandler<? super REQ> messageHandler, Class<REQ> requestType)
     {
-        SimpleChannelHandlerWrapper<REQ, REPLY> handler = getHandlerWrapper(messageHandler, Side.CLIENT, requestType);
+        SimpleChannelHandlerWrapper<REQ> handler = getHandlerWrapper(messageHandler, Side.CLIENT, requestType);
         channel.pipeline().addAfter(type, generateName(channel.pipeline(), handler), handler);
     }
 
-    private <REPLY extends IMessage, REQ extends IMessage> SimpleChannelHandlerWrapper<REQ, REPLY> getHandlerWrapper(IMessageHandler<? super REQ, ? extends REPLY> messageHandler, Side side, Class<REQ> requestType)
+    private <REQ extends IMessage> SimpleChannelHandlerWrapper<REQ> getHandlerWrapper(IMessageHandler<? super REQ> messageHandler, Side side, Class<REQ> requestType)
     {
-        return new SimpleChannelHandlerWrapper<REQ, REPLY>(messageHandler, side, requestType);
+        return new SimpleChannelHandlerWrapper<>(messageHandler, side, requestType);
     }
 
     /**
      * Construct a minecraft packet from the supplied message. Can be used where minecraft packets are required, such as
-     * {@link TileEntity#getDescriptionPacket()}.
+     * {@link TileEntity#getUpdatePacket()}.
      *
      * @param message The message to translate into packet form
      * @return A minecraft {@link Packet} suitable for use in minecraft APIs
