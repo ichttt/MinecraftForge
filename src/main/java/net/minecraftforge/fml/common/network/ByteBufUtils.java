@@ -56,7 +56,7 @@ public class ByteBufUtils {
                 returnString.append("\n");
             }
 
-            returnString.append(Integer.toString((buffer.getByte(i) & 0xF0) >> 4, 16) + Integer.toString((buffer.getByte(i) & 0x0F) >> 0, 16));
+            returnString.append(Integer.toString((buffer.getByte(i) & 0xF0) >> 4, 16)).append(Integer.toString((buffer.getByte(i) & 0x0F) >> 0, 16));
             returnString.append(' ');
         }
 
@@ -92,7 +92,7 @@ public class ByteBufUtils {
 
         // Finally, tidy it all up with a newline
         returnString.append('\n');
-        returnString.append("Length: " + currentLength);
+        returnString.append("Length: ").append(currentLength);
 
         return returnString.toString();
 

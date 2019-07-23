@@ -98,8 +98,8 @@ public class RuntimeEnumExtender implements ILaunchPluginService {
             if (args.length == 0 || !args[0].equals(STRING)) {
                 LOGGER.fatal(()->new AdvancedLogMessageAdapter(sb-> {
                     sb.append("Enum has create method without String as first parameter:\n");
-                    sb.append("  Enum: " + classType.getDescriptor()).append("\n");
-                    sb.append("  Target: ").append(mtd.name + mtd.desc).append("\n");
+                    sb.append("  Enum: ").append(classType.getDescriptor()).append("\n");
+                    sb.append("  Target: ").append(mtd.name).append(mtd.desc).append("\n");
                 }));
                 throw new IllegalStateException("Enum has create method without String as first parameter: " + mtd.name + mtd.desc);
             }
@@ -108,8 +108,8 @@ public class RuntimeEnumExtender implements ILaunchPluginService {
             if (!ret.equals(classType)) {
                 LOGGER.fatal(()->new AdvancedLogMessageAdapter(sb-> {
                     sb.append("Enum has create method with incorrect return type:\n");
-                    sb.append("  Enum: " + classType.getDescriptor()).append("\n");
-                    sb.append("  Target: ").append(mtd.name + mtd.desc).append("\n");
+                    sb.append("  Enum: ").append(classType.getDescriptor()).append("\n");
+                    sb.append("  Target: ").append(mtd.name).append(mtd.desc).append("\n");
                     sb.append("  Found: ").append(ret.getClassName()).append(", Expected: ").append(classType.getClassName());
                 }));
                 throw new IllegalStateException("Enum has create method with incorrect return type: " + mtd.name + mtd.desc);
@@ -118,8 +118,7 @@ public class RuntimeEnumExtender implements ILaunchPluginService {
             Type[] ctrArgs = new Type[args.length + 1];
             ctrArgs[0] = STRING;
             ctrArgs[1] = Type.INT_TYPE;
-            for (int x = 1; x < args.length; x++)
-                ctrArgs[1 + x] = args[x];
+            System.arraycopy(args, 1, ctrArgs, 2, args.length - 1);
 
             String desc = Type.getMethodDescriptor(Type.VOID_TYPE, ctrArgs);
 

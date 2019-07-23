@@ -661,16 +661,16 @@ public class GameData
             List<ResourceLocation> missingRegs = snapshot.keySet().stream().filter(name -> !RegistryManager.ACTIVE.registries.containsKey(name)).collect(Collectors.toList());
             if (missingRegs.size() > 0)
             {
-                String text = "Forge Mod Loader detected missing/unknown registrie(s).\n\n" +
+                StringBuilder text = new StringBuilder("Forge Mod Loader detected missing/unknown registrie(s).\n\n" +
                         "There are " + missingRegs.size() + " missing registries in this save.\n" +
                         "If you continue the missing registries will get removed.\n" +
                         "This may cause issues, it is advised that you create a world backup before continuing.\n\n" +
-                        "Missing Registries:\n";
+                        "Missing Registries:\n");
 
                 for (ResourceLocation s : missingRegs)
-                    text += s.toString() + "\n";
+                    text.append(s.toString()).append("\n");
 
-                if (!StartupQuery.confirm(text))
+                if (!StartupQuery.confirm(text.toString()))
                     StartupQuery.abort();
             }
         }
