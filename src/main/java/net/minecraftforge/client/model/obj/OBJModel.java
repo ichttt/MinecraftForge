@@ -23,6 +23,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -366,8 +367,7 @@ public class OBJModel implements IUnbakedModel
                         if (key.equalsIgnoreCase("g"))
                         {
                             String[] splitSpace = data.split(" ");
-                            for (String s : splitSpace)
-                                groupList.add(s);
+                            groupList.addAll(Arrays.asList(splitSpace));
                         }
                         else
                         {

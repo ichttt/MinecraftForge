@@ -318,7 +318,7 @@ public class DimensionManager
         List<SavedEntry> list = new ArrayList<>();
         for (DimensionType type : REGISTRY)
             list.add(new SavedEntry(type));
-        savedEntries.values().forEach(list::add);
+        list.addAll(savedEntries.values());
 
         Collections.sort(list, (a, b) -> a.id - b.id);
         ListNBT lst = new ListNBT();

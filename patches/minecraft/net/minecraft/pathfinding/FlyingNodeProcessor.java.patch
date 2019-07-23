@@ -10,12 +10,3 @@
        if (enumset.contains(PathNodeType.FENCE)) {
           return PathNodeType.FENCE;
        } else {
-@@ -239,6 +241,8 @@
-          if (pathnodetype1 != PathNodeType.DAMAGE_FIRE && block != Blocks.field_196814_hQ && pathnodetype1 != PathNodeType.LAVA && block != Blocks.field_222433_lV) {
-             if (pathnodetype1 == PathNodeType.DAMAGE_CACTUS) {
-                pathnodetype = PathNodeType.DAMAGE_CACTUS;
-+            } else if (pathnodetype1 == PathNodeType.DAMAGE_OTHER) { // Forge: consider modded damage types
-+               pathnodetype = PathNodeType.DAMAGE_OTHER;
-             } else if (pathnodetype1 == PathNodeType.DAMAGE_OTHER) {
-                pathnodetype = PathNodeType.DAMAGE_OTHER;
-             } else {

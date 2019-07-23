@@ -157,7 +157,7 @@ public class RuntimeDistCleaner implements ILaunchPluginService
         anns.stream().filter(ann->Objects.equals(ann.desc, ONLYINS) && ann.values != null)
             .map( ann -> (List<AnnotationNode>)ann.values.get(ann.values.indexOf("value") + 1))
             .filter(v -> v != null)
-            .forEach(v -> v.forEach(ret::add));
+            .forEach(v -> ret.addAll(v));
         return ret;
     }
 
