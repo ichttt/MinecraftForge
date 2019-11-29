@@ -17,13 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package net.minecraftforge.fml.client.config;
+package net.minecraftforge.fml.client.util;
 
 import net.minecraft.client.Minecraft;
 
 import javax.annotation.Nullable;
-
-import net.minecraft.client.gui.widget.button.Button.IPressable;
 
 /**
  * This class is blatantly stolen from iChunUtils with permission.

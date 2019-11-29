@@ -173,34 +173,12 @@ public class ClientHooks
 
     }
 
-    public static String fixDescription(String description)
-    {
-        return description.endsWith(":NOFML§r") ? description.substring(0, description.length() - 8)+"§r" : description;
-    }
-
-    static File getSavesDir()
-    {
-        return new File(Minecraft.getInstance().gameDir, "saves");
-    }
-
-    public static void tryLoadExistingWorld(WorldSelectionScreen selectWorldGUI, WorldSummary comparator)
-    {
-        try
-        {
-            Minecraft.getInstance().launchIntegratedServer(comparator.getFileName(), comparator.getDisplayName(), null);
-        }
-        catch (StartupQuery.AbortedException e)
-        {
-            // ignore
-        }
-    }
-
     private static NetworkManager getClientToServerNetworkManager()
     {
         return Minecraft.getInstance().getConnection()!=null ? Minecraft.getInstance().getConnection().getNetworkManager() : null;
     }
 
-    public static void handleClientWorldClosing(ClientWorld world)
+    public static void handleClientWorldClosing(ClientWorld world) //TODO nothing is reverting to frozen right now, is this still needed?
     {
         NetworkManager client = getClientToServerNetworkManager();
         // ONLY revert a non-local connection

@@ -34,7 +34,7 @@ import net.minecraft.client.gui.IRenderable;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraftforge.fml.client.config.GuiUtils;
+import net.minecraftforge.fml.client.util.GuiUtils;
 
 public abstract class ScrollPanel extends FocusableGui implements IRenderable
 {
