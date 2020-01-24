@@ -1,0 +1,35 @@
+--- a/net/minecraft/client/gui/widget/button/CheckboxButton.java
++++ b/net/minecraft/client/gui/widget/button/CheckboxButton.java
+@@ -12,11 +12,13 @@
+ @OnlyIn(Dist.CLIENT)
+ public class CheckboxButton extends AbstractButton {
+    private static final ResourceLocation field_212944_b = new ResourceLocation("textures/gui/checkbox.png");
++   private final float scaleRatio; //FORGE: Add ratio, to scale the icon if a smaller height is requested
+    boolean field_212943_a;
+ 
+    public CheckboxButton(int p_i51140_1_, int p_i51140_2_, int p_i51140_3_, int p_i51140_4_, String p_i51140_5_, boolean p_i51140_6_) {
+       super(p_i51140_1_, p_i51140_2_, p_i51140_3_, p_i51140_4_, p_i51140_5_);
+       this.field_212943_a = p_i51140_6_;
++      this.scaleRatio = p_i51140_4_ == 20 ? 1F : p_i51140_4_ / 20F; //FORGE: Icon scaling
+    }
+ 
+    public void onPress() {
+@@ -36,9 +38,16 @@
+       RenderSystem.enableBlend();
+       RenderSystem.defaultBlendFunc();
+       RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+-      blit(this.x, this.y, 0.0F, this.field_212943_a ? 20.0F : 0.0F, 20, this.height, 32, 64);
++      //FORGE: Scale the icon so it properly resizes if the height isn't 20
++      if (this.scaleRatio != 1F) {
++         RenderSystem.pushMatrix();
++         RenderSystem.scalef(scaleRatio, scaleRatio, 1F);
++      }
++      blit((int) (this.x / scaleRatio), (int) (this.y / scaleRatio), 0.0F, this.field_212943_a ? 20.0F : 0.0F, 20, 20, 32, 64);
++      if (this.scaleRatio != 1F) RenderSystem.popMatrix();
+       this.renderBg(minecraft, p_renderButton_1_, p_renderButton_2_);
+       int i = 14737632;
+-      this.drawString(fontrenderer, this.getMessage(), this.x + 24, this.y + (this.height - 8) / 2, 14737632 | MathHelper.func_76123_f(this.alpha * 255.0F) << 24);
++      //FORGE: don't use a static x offset, use the height as an indicator for the icon width
++      this.drawString(fontrenderer, this.getMessage(), this.x + 4 + this.height, this.y + (this.height - 8) / 2, 14737632 | MathHelper.func_76123_f(this.alpha * 255.0F) << 24);
+    }
+ }
